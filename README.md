@@ -4,8 +4,8 @@ Carnac
 Staff Role selector tool csv(excel) in csv(excel) out
 
 Using Python 2.7.5
-
-Carnac MUST be able to do 3 things:
+======
+#Carnac MUST be able to do 3 things:
 Import a csv
 
 Make changes to that csv based on rules
