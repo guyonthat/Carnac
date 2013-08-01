@@ -5,6 +5,11 @@ Staff Role selector tool csv(excel) in csv(excel) out
 
 Using Python 2.7.5
 
+#resources
+http://docs.python.org/2/library/csv.html
+
+effbot
+
 #@todo
 @todo add functionality of load and save apply to import_file_contents and output_file_contents
 
