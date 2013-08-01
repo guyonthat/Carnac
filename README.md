@@ -5,6 +5,25 @@ Staff Role selector tool csv(excel) in csv(excel) out
 
 Using Python 2.7.5
 
+Carnac MUST be able to do 3 things:
+Import a csv
+
+Make changes to that csv based on rules
+
+Export that csv
+
+If it can do the above, then it is "working" If it completes all of the stretch goals it will be "finished."
+
+Stretch goals include: making the tool's rules to be edited in the tool, and then run on the un-edited code.
+
+Allow the user to select which rules will be applied
+
+Allow the user to undo an action
+
+Allow the user to select which column they would like to perform rules on
+
+Allow the user to import a group of rules for a different project
+
 #resources
 http://docs.python.org/2/library/csv.html
 
