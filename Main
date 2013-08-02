@@ -1,0 +1,75 @@
+#Carnac 1.3 Gui test this is with the headfirst guide
+
+#Call Tkinter
+from Tkinter import *
+import tkFileDialog
+
+#-------------------
+#Application Window
+#-------------------
+#make app window
+app = Tk()
+app.title("Test GUI for Carnac")
+app.geometry("400x400")
+
+#define some commands    
+def import_csv():
+    print "Importing..."
+    filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=app, title="import")
+    print filename
+
+def alright():
+    print "Check"
+
+def save_csv():
+    print "Saving..."
+    filename = tkFileDialog.asksaveasfile(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="import")
+    print filename
+
+    
+
+#-----------------
+#Menu
+#-----------------
+#creates menu
+menu_bar = Menu(app)
+
+#creates sub menu
+file_sub_menu = Menu(menu_bar, tearoff=0)
+file_sub_menu.add_command(label="Import File", command=import_csv)
+file_sub_menu.add_command(label="Save As", command=save_csv)
+file_sub_menu.add_separator()
+file_sub_menu.add_command(label="Close", command=app.quit)
+
+menu_bar.add_cascade(label="File", menu=file_sub_menu)
+#makes menu_bar App's menu
+app.config(menu=menu_bar)
+
+#-----------------
+#Display
+#-----------------
+#-----------------
+#Button Bar
+#-----------------
+#button_bar = Frame()
+#Label(button_bar, text="").pack(side = "bottom")
+close_button = Button(app, text = "Close", command=app.quit)
+close_button.pack(side = "right")
+
+import_button = Button(app, text = "Import", command=import_csv)
+import_button.pack(side = "left")
+
+import_button = Button(app, text = "Manage Rules", command=save_csv)
+import_button.pack(side = "left")
+
+import_button = Button(app, text = "Save", command=save_csv)
+import_button.pack(side = "left")    
+
+
+
+
+app.mainloop()
+app.destroy()
+
+
+
