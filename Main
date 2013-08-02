@@ -12,6 +12,9 @@ app = Tk()
 app.title("Test GUI for Carnac")
 app.geometry("400x400")
 
+#------------------------
+Defs and Button functions
+#------------------------
 #define some commands    
 def import_csv():
     print "Importing..."
