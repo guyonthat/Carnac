@@ -3,6 +3,8 @@
 #Call Tkinter
 from Tkinter import *
 import tkFileDialog
+import csv
+
 
 #-------------------
 #Application Window
@@ -13,21 +15,39 @@ app.title("Test GUI for Carnac")
 app.geometry("400x400")
 
 #------------------------
-Defs and Button functions
+#Defs and Button functions
 #------------------------
-#define some commands    
+#define some commands
+#import button, gets and reads in file, defines list
 def import_csv():
     print "Importing..."
     filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=app, title="import")
     print filename
+#write in the CSV
+    with open(filename, 'rb') as csvfile: 
+        imported_file = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in imported_file:
+                    print ', '.join(row)
+                  #working_file = imported_file.split(,).join(row)
+                  
 
+#copy over the list, so the original is preserved
+    output_file = working_file
+
+    
 def alright():
     print "Check"
-
+#save button, takes working file turns into output file, 
 def save_csv():
     print "Saving..."
-    filename = tkFileDialog.asksaveasfile(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="import")
-    print filename
+    exportname = tkFileDialog.asksaveasfile(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="import")
+    print exportname
+# write contents of list into .csv
+    with open(exportname, 'wb') as csvfile:
+        output_file = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csvQUOTE_MINIMAL)
+        output_file.writerows(rows)
+        
+
 
     
 
@@ -62,17 +82,16 @@ close_button.pack(side = "right")
 import_button = Button(app, text = "Import", command=import_csv)
 import_button.pack(side = "left")
 
-import_button = Button(app, text = "Manage Rules", command=save_csv)
-import_button.pack(side = "left")
+#import_button = Button(app, text = "Manage Rules", command=save_csv)
+#import_button.pack(side = "left")
 
 import_button = Button(app, text = "Save", command=save_csv)
-import_button.pack(side = "left")    
+import_button.pack(side = "left")
 
 
 
 
 app.mainloop()
 app.destroy()
-
 
 
