@@ -24,32 +24,33 @@ def import_csv():
     filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=app, title="import")
     print filename
 #write in the CSV
-    with open(filename, 'rb') as csvfile: 
-        imported_file = csv.reader(csvfile, delimiter=',', quotechar='|')
+    
+    with open(filename, 'r') as csvfile: 
+        imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        working_file = []
         for row in imported_file:
                     print ', '.join(row)
-                  #working_file = imported_file.split(,).join(row)
-                  
-
+                    working_file.append(row)                 
+        print working_file
+        global working_file
 #copy over the list, so the original is preserved
-    output_file = working_file
-
+    
     
 def alright():
-    print "Check"
+    print "Alright, test that string"
+    print working_file
 #save button, takes working file turns into output file, 
 def save_csv():
     print "Saving..."
-    exportname = tkFileDialog.asksaveasfile(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="import")
+    print working_file
+    exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="Save As")
     print exportname
-# write contents of list into .csv
+# write contents of list into .csv 
+  
     with open(exportname, 'wb') as csvfile:
-        output_file = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csvQUOTE_MINIMAL)
-        output_file.writerows(rows)
-        
-
-
-    
+        output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        #output_file.writerow(['please', 'work', 'damnit'])
+        output_file.writerows(working_file)
 
 #-----------------
 #Menu
@@ -79,6 +80,9 @@ app.config(menu=menu_bar)
 close_button = Button(app, text = "Close", command=app.quit)
 close_button.pack(side = "right")
 
+alright_button = Button(app, text = "Alright", command=alright)
+alright_button.pack(side = "left")
+'''
 import_button = Button(app, text = "Import", command=import_csv)
 import_button.pack(side = "left")
 
@@ -87,6 +91,12 @@ import_button.pack(side = "left")
 
 import_button = Button(app, text = "Save", command=save_csv)
 import_button.pack(side = "left")
+
+'''
+
+
+app.mainloop()
+app.destroy()
 
 
 
