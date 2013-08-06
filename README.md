@@ -26,6 +26,7 @@ Allow the user to import a group of rules for a different project
 
 #resources
 http://docs.python.org/2/library/csv.html
+http://www.tutorialspoint.com/python/python_classes_objects.htm
 
 effbot
 
