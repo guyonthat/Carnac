@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.7.5
 #Carnac 1.3 Gui test this is with the headfirst guide
 
 #Call Tkinter
