@@ -1,102 +1,133 @@
 #!/usr/bin/env python2.7.5
-#Carnac 1.3 Gui test this is with the headfirst guide
-
-#Call Tkinter
+#Carnac Gui using OOP
+'''
+Intent of program is to:
+Pull in a csv
+Process the title column
+Run rules to modify the column contents based on "roles"
+Make the rule able to be changed in app by user
+Run rules multiple times
+Export to file
+'''
+#----------
+#Import your shit
+#----------
 from Tkinter import *
+from tkMessageBox import*
 import tkFileDialog
 import csv
+#----------
+#global Variables, to be modified later
+#----------
+working_file = []
+#----------
+#call Make the Gui and buttons
+#----------
+class MainMenu(Frame): #calls the main window
+        def __init__(self, parent=None):
+            Frame.__init__(self,parent) #makes main menu top level <--- this is a lie? see @learnwhat
+            self.pack(expand=YES, fill=BOTH)
+            self.createWidgets()
+            self.master.title("Carnac Role Guessing Tool")
+            self.master.iconname("Carnac")
 
+        def createWidgets(self): #loads widges into MainMenu
+            self.makeMenuBar()
+            self.makeButtonBar()
+            Side_scroll = Scrollbar(self)
+            Print_box = Text(self)
+            Side_scroll.config(command=Print_box.yview)
+            Side_scroll.pack(side=RIGHT, fill=Y)
+            Print_box.config(state=DISABLED, relief=SUNKEN, width=40, height=20, bg='white',yscrollcommand=Side_scroll.set)
+            Print_box.pack(side=LEFT, expand=YES, fill=BOTH)
+            self.Print_box = Print_box
+                        
 
-#-------------------
-#Application Window
-#-------------------
-#make app window
-app = Tk()
-app.title("Test GUI for Carnac")
-app.geometry("400x400")
+        def makeButtonBar(self): #aka button bar in the psuedo
+            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
+            ButtonBar.pack(side=BOTTOM, fill=X)
+            
+            close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
+            close_button.pack(side = "right")
 
-#------------------------
-#Defs and Button functions
-#------------------------
-#define some commands
-#import button, gets and reads in file, defines list
-def import_csv():
-    print "Importing..."
-    filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=app, title="import")
+            alright_button = Button(ButtonBar, text = "Alright", command=self.alright)
+            alright_button.pack(side = "left")
+            '''
+            import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
+            import_button.pack(side = "left")
+
+            #import_button = Button(ButtonBar, text = "Manage Rules", command=self.save_csv)
+            #import_button.pack(side = "left")
+
+            import_button = Button(ButtonBar, text = "Save", command=self.save_csv)
+            import_button.pack(side = "left")
+
+            '''
+        def makeMenuBar(self):
+            self.menubar = Menu(self.master)
+            self.master.config(menu=self.menubar) #master top level window @leanwhat top level means specifically #THIS IS THE TOPLEVEL WINDOW THAT GETS CLOSED
+            self.fileMenu()
+
+        def fileMenu(self):
+            pulldown = Menu(self.menubar) # The (self.menubar) sets it in the menubar
+            pulldown.add_command(label="Import File", command=self.import_csv)
+            pulldown.add_command(label="Save As", command=self.save_csv)
+            pulldown.add_separator()
+            pulldown.add_command(label="Close", command=self.program_quit)
+            self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
+        '''
+        def askopenfilename(self):
+            filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=MainMenu, title="import")
+
+            return filename
+        '''            
+#-------
+#define button actions
+#-------                      
+        def program_quit(self):
+            print "Shut it down"
+            self.master.destroy()
+            '''if askyesno('Verify Quit', 'Are you sure you want to quit?'):
+                Frame.quit(self)
+                sys.exit()
+            '''
+
+        def import_csv(self):
+            print "Importing..."
+        '''
+    filename = MainMenu.askopenfilename
     print filename
 #write in the CSV
     
     with open(filename, 'r') as csvfile: 
+        global working_file #modifies global
         imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
         working_file = []
         for row in imported_file:
                     print ', '.join(row)
                     working_file.append(row)                 
         print working_file
-        global working_file
+        '''    
 #copy over the list, so the original is preserved
-    
-    
-def alright():
-    print "Alright, test that string"
-    print working_file
+        def alright(self):
+            self.Print_box.configure(state=NORMAL) #allows additions to text widget
+            self.Print_box.insert(END,"Alright, test that string \n") #try printing to text widget
+            print "Alright, test that string" #for debugging
+            print working_file
+            self.Print_box.configure(state=DISABLED) #stops additions to text widget
 #save button, takes working file turns into output file, 
-def save_csv():
-    print "Saving..."
+        def save_csv(self):
+    
+            print "Saving..."
+        '''
     print working_file
-    exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=app, title="Save As")
+    exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=window, title="Save As")
     print exportname
 # write contents of list into .csv 
-  
     with open(exportname, 'wb') as csvfile:
         output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         #output_file.writerow(['please', 'work', 'damnit'])
         output_file.writerows(working_file)
-
-#-----------------
-#Menu
-#-----------------
-#creates menu
-menu_bar = Menu(app)
-
-#creates sub menu
-file_sub_menu = Menu(menu_bar, tearoff=0)
-file_sub_menu.add_command(label="Import File", command=import_csv)
-file_sub_menu.add_command(label="Save As", command=save_csv)
-file_sub_menu.add_separator()
-file_sub_menu.add_command(label="Close", command=app.quit)
-
-menu_bar.add_cascade(label="File", menu=file_sub_menu)
-#makes menu_bar App's menu
-app.config(menu=menu_bar)
-
-#-----------------
-#Display
-#-----------------
-#-----------------
-#Button Bar
-#-----------------
-#button_bar = Frame()
-#Label(button_bar, text="").pack(side = "bottom")
-close_button = Button(app, text = "Close", command=app.quit)
-close_button.pack(side = "right")
-
-alright_button = Button(app, text = "Alright", command=alright)
-alright_button.pack(side = "left")
-'''
-import_button = Button(app, text = "Import", command=import_csv)
-import_button.pack(side = "left")
-
-#import_button = Button(app, text = "Manage Rules", command=save_csv)
-#import_button.pack(side = "left")
-
-import_button = Button(app, text = "Save", command=save_csv)
-import_button.pack(side = "left")
-
-'''
-
-
-app.mainloop()
-app.destroy()
-
-
+        '''
+if __name__ == '__main__': MainMenu().mainloop() #if I'm run as a script
+    
