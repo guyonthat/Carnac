@@ -16,9 +16,11 @@ from Tkinter import *
 from tkMessageBox import*
 import tkFileDialog
 import csv
+
 #----------
 #global Variables, to be modified later
 #----------
+imported_csv = []
 working_file = []
 #----------
 #call Make the Gui and buttons
@@ -38,31 +40,41 @@ class MainMenu(Frame): #calls the main window
             Print_box = Text(self)
             Side_scroll.config(command=Print_box.yview)
             Side_scroll.pack(side=RIGHT, fill=Y)
-            Print_box.config(state=DISABLED, relief=SUNKEN, width=40, height=20, bg='white',yscrollcommand=Side_scroll.set)
+            Print_box.config(state=DISABLED, relief=SUNKEN, width=80, height=20, bg='white',yscrollcommand=Side_scroll.set)
             Print_box.pack(side=LEFT, expand=YES, fill=BOTH)
             self.Print_box = Print_box
                         
-
+#-------
+#Report function
+#This function is to save time and code by enveloping the simon says with the text widget, into a print-like line
+#'where' is not a string, 'what' and mod are
+        def report(self,where,what): #to be used to print to the user and the shell
+                    self.Print_box.configure(state=NORMAL) #allows additions to text widget
+                    self.Print_box.insert(where,what) #try printing to text widget
+                    self.Print_box.insert(END,"\n")
+                    print what #for debugging
+                    self.Print_box.configure(state=DISABLED) #stops additions to text widget
+#------------                    
         def makeButtonBar(self): #aka button bar in the psuedo
             ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
             ButtonBar.pack(side=BOTTOM, fill=X)
             
             close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
             close_button.pack(side = "right")
-
-            alright_button = Button(ButtonBar, text = "Alright", command=self.alright)
-            alright_button.pack(side = "left")
-            '''
+            
             import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
             import_button.pack(side = "left")
+            
+            alright_button = Button(ButtonBar, text = "Alright", command=self.alright)
+            alright_button.pack(side = "left")
 
-            #import_button = Button(ButtonBar, text = "Manage Rules", command=self.save_csv)
-            #import_button.pack(side = "left")
+            import_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
+            import_button.pack(side = "left")
 
             import_button = Button(ButtonBar, text = "Save", command=self.save_csv)
             import_button.pack(side = "left")
 
-            '''
+            
         def makeMenuBar(self):
             self.menubar = Menu(self.master)
             self.master.config(menu=self.menubar) #master top level window @leanwhat top level means specifically #THIS IS THE TOPLEVEL WINDOW THAT GETS CLOSED
@@ -71,63 +83,91 @@ class MainMenu(Frame): #calls the main window
         def fileMenu(self):
             pulldown = Menu(self.menubar) # The (self.menubar) sets it in the menubar
             pulldown.add_command(label="Import File", command=self.import_csv)
+            pulldown.add_command(label="Reset", command=self.RESET)
             pulldown.add_command(label="Save As", command=self.save_csv)
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
             self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
-        '''
-        def askopenfilename(self):
-            filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], parent=MainMenu, title="import")
-
-            return filename
-        '''            
+                    
 #-------
 #define button actions
 #-------                      
         def program_quit(self):
-            print "Shut it down"
-            self.master.destroy()
-            '''if askyesno('Verify Quit', 'Are you sure you want to quit?'):
-                Frame.quit(self)
-                sys.exit()
-            '''
+            self.report(END, "Shutting Down")
+            if askyesno('Verify Quit', 'Are you sure you want to quit?'):
+                self.master.destroy()
+            
+                
+           
 
         def import_csv(self):
-            print "Importing..."
-        '''
-    filename = MainMenu.askopenfilename
-    print filename
+            self.report(END, "Importing...")
+        
+            filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Import CSV")
+            self.report(END,filename)
+                   
 #write in the CSV
-    
-    with open(filename, 'r') as csvfile: 
-        global working_file #modifies global
-        imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
-        working_file = []
-        for row in imported_file:
-                    print ', '.join(row)
-                    working_file.append(row)                 
-        print working_file
-        '''    
+            with open(filename, 'r') as csvfile: 
+                global imported_csv #modifies global
+                imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
+                imported_csv = []
+                row_count = -1 #"Take back one kadam to honor the Hebrew God, whose Ark this is"(remove one for the header)
+                for row in imported_file:
+                            print ', '.join(row)
+                            imported_csv.append(row)
+                            row_count = row_count + 1
+                            #print row_count #for debugging
+                print imported_csv
+                self.report(END,"Successfully imported %s records" % row_count)
+                
+        
 #copy over the list, so the original is preserved
         def alright(self):
-            self.Print_box.configure(state=NORMAL) #allows additions to text widget
-            self.Print_box.insert(END,"Alright, test that string \n") #try printing to text widget
-            print "Alright, test that string" #for debugging
-            print working_file
-            self.Print_box.configure(state=DISABLED) #stops additions to text widget
+            #self.Print_box.configure(state=NORMAL) #allows additions to text widget @removed turned into report function
+            #self.Print_box.insert(END,"Alright, test that string \n") #try printing to text widget
+            self.report(END,"You asked for it...")
+            #print "Alright, test that string!" #for debugging
+            #self.report(END, imported_csv) #dumps contents
+            for row in imported_csv: #dumps contents in rows
+                        #print row #for debug, called in report function
+                        self.report(END,row)
+            #self.Print_box.configure(state=DISABLED) #stops additions to text widget
+
+        def run_rules(self):
+            self.report(END,"Running the rules!")
+            #if transition file has contents then skip getting column
+            active_col = 0            
+            #get which column will be run
+                #pop up window with drop-box populated with the first row of imported_csv, and an accept and run rules button  and cancel button okay returns the active_col number
+                #cancel escapes this code
+            #read that column into a transition file
+            #clean transition file
+            #run rules that are rule run yes on transition file
+            #return box name and amount if amount greater than 0
+
+        #@todo def modify_rules(self):
+            #pop up new gui to have user add mod and del rules
+            #has checkbox for rule run yes/no
+            
+        def RESET(self):
+            global working_csv
+            if askyesno('Verify Reset', 'Are you sure you want to undo all rule work?'):
+                working_csv = []
+                
+                        
 #save button, takes working file turns into output file, 
         def save_csv(self):
-    
-            print "Saving..."
-        '''
-    print working_file
-    exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", parent=window, title="Save As")
-    print exportname
-# write contents of list into .csv 
-    with open(exportname, 'wb') as csvfile:
-        output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        #output_file.writerow(['please', 'work', 'damnit'])
-        output_file.writerows(working_file)
-        '''
+            #add contents of working_file into imported_csv (probably a function)
+            self.report(END, "Saving...")
+        
+            print imported_csv
+            exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Save As")
+            print exportname
+        # write contents of list into .csv 
+            with open(exportname, 'wb') as csvfile:
+                output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                #output_file.writerow(['please', 'work', 'damnit'])
+                output_file.writerows(imported_csv)
+        
 if __name__ == '__main__': MainMenu().mainloop() #if I'm run as a script
     
