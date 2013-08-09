@@ -47,7 +47,7 @@ class MainMenu(Frame): #calls the main window
 #-------
 #Report function
 #This function is to save time and code by enveloping the simon says with the text widget, into a print-like line
-#'where' is not a string, 'what' and mod are
+#'where' is not a string, 'what' and 'mod' are
         def report(self,where,what): #to be used to print to the user and the shell
                     self.Print_box.configure(state=NORMAL) #allows additions to text widget
                     self.Print_box.insert(where,what) #try printing to text widget
