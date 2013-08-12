@@ -18,17 +18,15 @@ import tkFileDialog
 import csv
 
 #----------
-#global Variables, to be modified later
-#----------
-
-#----------
 #call Make the Gui and buttons
 #----------
 class Carnac(Frame): #calls the Carnac Parent Class
     def __init__(self):
+        self.Carnac_Gui(Self)
         self.imported_csv = []
         self.working_file = []
-if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+        
+#if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
 
 class Carnac_Gui(Carnac):
         def __init__(self):
@@ -85,10 +83,7 @@ class Carnac_Gui(Carnac):
             pulldown.add_command(label="Save As", command=self.save_csv)
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
-            self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
-if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
-
-class Carnac_Functions(Carnac):                    
+            self.menubar.add_cascade(label='File', underline=0, menu=pulldown)                   
 #-------
 #Report function
 #This function is to save time and code by enveloping the simon says with the text widget, into a print-like line
@@ -179,5 +174,5 @@ class Carnac_Functions(Carnac):
                 #output_file.writerow(['please', 'work', 'damnit'])
                 output_file.writerows(imported_csv)
         
-if __name__ == '__main__': Carnac_Functions().mainloop() #if I'm run as a script
+if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
     
