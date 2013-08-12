@@ -22,41 +22,23 @@ import csv
 #----------
 class Carnac(Frame): #calls the Carnac Parent Class
     def __init__(self):
-        #self.Carnac_Gui(Self)
+        self.pack(expand=YES, fill=BOTH)
+        self.gui = Carnac_Gui(self.master)
         self.imported_csv = []
         self.working_file = []
         self.col_num = -1
-        
-#if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
-class Column_select_pop(Carnac): #is called by button press in Carnac
-    def __init__(self):
-        Frame.__init__(self) #this is was self is
-        self.pack(expand=YES, fill=BOTH) #dont know why
-        clm_window = Toplevel() #pops the new window
-        window_frame = Frame(clm_window, cursor='hand2', bd=4, relief=SUNKEN, bg="white", width=600, height=200) #puts a frame in the window
-        #self.window_frame= window_frame #necessary to put into the widonw clm_window
-        self.window_frame.pack()
-        self.createWidgets()
-        
-    def createWidgets(self):
-        self.makeButtonBar()
-        
-    def makeButtonBar(self): 
-            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
-            ButtonBar.pack(side=BOTTOM, fill=X)
-
-            close_button = Button(self, text = "Save and Close",)# command=destroy)
-            close_button.pack(side = "right")
+        self.master.title("Carnac Role Guessing Tool")
+        self.master.iconname("Carnac")
     
 class Carnac_Gui(Carnac):
         def __init__(self):
             Frame.__init__(self) #makes main menu top level <--- this is a lie? see @learnwhat #TOP LEVEL WINDOW IS Called "Master"
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
-            self.master.title("Carnac Role Guessing Tool")
-            self.master.iconname("Carnac")
+            #self.master.title("Carnac Role Guessing Tool")
+            #self.master.iconname("Carnac")
 
-        def createWidgets(self): #loads widges into Carnac
+        def createWidgets(self): #loads widgets into Carnac
             self.makeMenuBar()
             self.makeButtonBar()
             self.makeTextBox()
@@ -97,8 +79,9 @@ class Carnac_Gui(Carnac):
 
             
         def makeMenuBar(self):
-            self.menubar = Menu(self.master)
-            self.master.config(menu=self.menubar) #master top level window @leanwhat top level means specifically #THIS IS THE TOPLEVEL WINDOW THAT GETS CLOSED
+            self.menubar = Menu(self)
+            #self.menubar = Menu(self.master)
+            #self.master.config(menu=self.menubar) #master top level window @leanwhat top level means specifically #THIS IS THE TOPLEVEL WINDOW THAT GETS CLOSED
             self.fileMenu()
 
         def fileMenu(self):
@@ -202,8 +185,31 @@ class Carnac_Gui(Carnac):
                 output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 #output_file.writerow(['please', 'work', 'damnit'])
                 output_file.writerows(imported_csv)
+
+      
+#if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+class Column_select_pop(Carnac): #is called by button press in Carnac
+    def __init__(self):
+        Frame.__init__(self) #this is was self is
+        self.pack(expand=YES, fill=BOTH) #dont know why
+        clm_window = Toplevel() #pops the new window
+        window_frame = Frame(clm_window, cursor='hand2', bd=4, relief=SUNKEN, bg="white", width=600, height=200) #puts a frame in the window
+        self.window_frame= window_frame #necessary to put into the widonw clm_window
+        self.window_frame.pack()
+        self.createWidgets()
         
-if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
+    def createWidgets(self):
+        self.makeButtonBar()
+        
+    def makeButtonBar(self): 
+            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
+            ButtonBar.pack(side=BOTTOM, fill=X)
+
+            close_button = Button(ButtonBar, text = "Save and Close",)# command=destroy)
+            close_button.pack(side = "right")
+        
+#if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
+if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
 
 
     
