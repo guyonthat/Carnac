@@ -25,12 +25,14 @@ import csv
 #call Make the Gui and buttons
 #----------
 class Carnac(Frame): #calls the Carnac Parent Class
-    imported_csv = []
-    working_file = []
+    def __init__(self):
+        self.imported_csv = []
+        self.working_file = []
 if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+
 class Carnac_Gui(Carnac):
-        def __init__(self, parent=None):
-            Frame.__init__(self,parent) #makes main menu top level <--- this is a lie? see @learnwhat
+        def __init__(self):
+            Frame.__init__(self) #makes main menu top level <--- this is a lie? see @learnwhat
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
             self.master.title("Carnac Role Guessing Tool")
@@ -84,7 +86,7 @@ class Carnac_Gui(Carnac):
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
             self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
-if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
 
 class Carnac_Functions(Carnac):                    
 #-------
@@ -177,5 +179,5 @@ class Carnac_Functions(Carnac):
                 #output_file.writerow(['please', 'work', 'damnit'])
                 output_file.writerows(imported_csv)
         
-if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+if __name__ == '__main__': Carnac_Functions().mainloop() #if I'm run as a script
     
