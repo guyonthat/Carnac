@@ -3,7 +3,7 @@
 '''
 Intent of program is to:
 Pull in a csv
-Process the title column
+Process the title column (selected procedurally to account for changes in column name)
 Run rules to modify the column contents based on "roles"
 Make the rule able to be changed in app by user
 Run rules multiple times
@@ -25,12 +25,33 @@ class Carnac(Frame): #calls the Carnac Parent Class
         self.Carnac_Gui(Self)
         self.imported_csv = []
         self.working_file = []
+        self.col_num = -1
         
 #if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
+class Column_select_pop(Frame):
+    def __init__(self):
+        Frame.__init__(self)
+        self.pack(expand=YES, fill=BOTH)
+        clm_window = Toplevel()
+        window_frame = Frame(clm_window, cursor='hand2', bd=4, relief=SUNKEN, bg="white", width=600, height=200)
+        self.window_frame= window_frame
+        self.window_frame.pack()
+        self.createWidgets()
+        
+    def createWidgets(self):
+        self.makeButtonBar()
+        
+        
+    def makeButtonBar(self): 
+            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
+            ButtonBar.pack(side=BOTTOM, fill=X)
 
+            close_button = Button(self, text = "Save and Close",)# command=destroy)
+            close_button.pack(side = "right")
+    
 class Carnac_Gui(Carnac):
         def __init__(self):
-            Frame.__init__(self) #makes main menu top level <--- this is a lie? see @learnwhat
+            Frame.__init__(self) #makes main menu top level <--- this is a lie? see @learnwhat #TOP LEVEL WINDOW IS Called "Master"
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
             self.master.title("Carnac Role Guessing Tool")
@@ -39,6 +60,9 @@ class Carnac_Gui(Carnac):
         def createWidgets(self): #loads widges into Carnac
             self.makeMenuBar()
             self.makeButtonBar()
+            self.makeTextBox()
+            
+        def makeTextBox(self):
             Side_scroll = Scrollbar(self)
             Bot_scroll = Scrollbar(self)
             Print_box = Text(self)
@@ -50,7 +74,6 @@ class Carnac_Gui(Carnac):
             Print_box.config(wrap=NONE)
             Print_box.pack(side=LEFT, expand=YES, fill=BOTH)
             self.Print_box = Print_box
-            
         def makeButtonBar(self): 
             ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
             ButtonBar.pack(side=BOTTOM, fill=X)
@@ -60,6 +83,9 @@ class Carnac_Gui(Carnac):
             
             import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
             import_button.pack(side = "left")
+            
+            column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
+            column_select_button.pack(side = "left")
             
             output_button = Button(ButtonBar, text = "Output", command=self.output)
             output_button.pack(side = "left")
@@ -83,7 +109,11 @@ class Carnac_Gui(Carnac):
             pulldown.add_command(label="Save As", command=self.save_csv)
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
-            self.menubar.add_cascade(label='File', underline=0, menu=pulldown)                   
+            self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
+
+        def column_pop(self):
+            win = Column_select_pop()
+            
 #-------
 #Report function
 #This function is to save time and code by enveloping the simon says with the text widget, into a print-like line
@@ -175,4 +205,7 @@ class Carnac_Gui(Carnac):
                 output_file.writerows(imported_csv)
         
 if __name__ == '__main__': Carnac_Gui().mainloop() #if I'm run as a script
+
+
+    
     
