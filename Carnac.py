@@ -28,8 +28,8 @@ import csv
 class Carnac(Frame): #calls the main window
         def __init__(self, parent = None):
             Frame.__init__(self,parent) #makes main menu top level <--- this is a lie? see @learnwhat
-            imported_csv = []
-            working_file = []
+            self.imported_csv = []
+            self.working_file = []
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
             self.master.title("Carnac Role Guessing Tool")
@@ -84,7 +84,7 @@ class Carnac(Frame): #calls the main window
             close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
             close_button.pack(side = "right")
             
-            import_button = Button(ButtonBar, text = "Import", command=self.import_csv(Carnac.imported_csv))
+            import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
             import_button.pack(side = "left")
 
             column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
@@ -118,7 +118,7 @@ class Carnac(Frame): #calls the main window
                 
            
 
-        def import_csv(self,doc):
+        def import_csv(self):
             self.report(END, "Importing...")
         
             filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Import CSV")
@@ -128,16 +128,16 @@ class Carnac(Frame): #calls the main window
             with open(filename, 'r') as csvfile: 
                 #global imported_csv #modifies global
                 imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
-                doc = []
+                self.imported_csv = []
                 row_count = -1 #"Take back one kadam to honor the Hebrew God, whose Ark this is"(remove one for the header)
                 for row in imported_file:
                             print ', '.join(row)
-                            doc.append(row)
+                            self.imported_csv.append(row)
                             row_count = row_count + 1
                             #print row_count #for debugging
-                print doc
+                print self.imported_csv
                 self.report(END,"Successfully imported %s records" % row_count)
-                return doc
+                
 
                 
 #copy over the list, so the original is preserved
@@ -147,7 +147,7 @@ class Carnac(Frame): #calls the main window
             self.report(END,"You asked for it...")
             #print "Test that string!" #for debugging
             #self.report(END, imported_csv) #dumps contents
-            for row in imported_csv: #dumps contents in rows
+            for row in self.imported_csv: #dumps contents in rows
                         #print row #for debug, called in report function
                         self.report(END,row)
             #self.Print_box.configure(state=DISABLED) #stops additions to text widget
@@ -179,7 +179,7 @@ class Carnac(Frame): #calls the main window
             #add contents of working_file into imported_csv (probably a function)
             self.report(END, "Saving...")
         
-            print imported_csv
+            print self.imported_csv
             exportname = tkFileDialog.asksaveasfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Save As")
             print exportname
         # write contents of list into .csv 
