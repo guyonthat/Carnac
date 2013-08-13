@@ -34,7 +34,7 @@ class Column_select_pop(Carnac): #is called by button press in Carnac
         self.pack(expand=YES, fill=BOTH) #dont know why
         clm_window = Toplevel() #pops the new window
         window_frame = Frame(clm_window, cursor='hand2', bd=4, relief=SUNKEN, bg="white", width=600, height=200) #puts a frame in the window
-        #self.window_frame= window_frame #necessary to put into the widonw clm_window
+        self.window_frame= window_frame #necessary to put into the widonw clm_window
         self.window_frame.pack()
         self.createWidgets()
         
@@ -143,7 +143,7 @@ class Carnac_Gui(Carnac):
                    
             
             with open(filename, 'r') as csvfile: #write in the CSV
-                global imported_csv #modifies global
+                #global imported_csv #modifies global
                 imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
                 imported_csv = []
                 row_count = -1 #"Take back one kadam to honor the Hebrew God, whose Ark this is"(remove one for the header)
@@ -184,7 +184,7 @@ class Carnac_Gui(Carnac):
             #has checkbox for rule run yes/no
             
         def RESET(self):
-            global working_csv
+            #global working_csv
             if askyesno('Verify Reset', 'Are you sure you want to undo all rule work?'):
                 working_csv = []
                 
