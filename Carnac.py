@@ -20,61 +20,49 @@ import csv
 #----------
 #global Variables, to be modified later
 #----------
-imported_csv = []
-working_file = []
+#imported_csv = []
+#working_file = []
 #----------
 #call Make the Gui and buttons
 #----------
-class MainMenu(Frame): #calls the main window
-        def __init__(self, parent=None):
+class Carnac(Frame): #calls the main window
+        def __init__(self, parent = None):
             Frame.__init__(self,parent) #makes main menu top level <--- this is a lie? see @learnwhat
+            imported_csv = []
+            working_file = []
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
             self.master.title("Carnac Role Guessing Tool")
             self.master.iconname("Carnac")
+            
 
-        def createWidgets(self): #loads widges into MainMenu
+        def createWidgets(self): #loads widgets into Carnac
             self.makeMenuBar()
             self.makeButtonBar()
             Side_scroll = Scrollbar(self)
+            Bot_scroll = Scrollbar(self)
             Print_box = Text(self)
             Side_scroll.config(command=Print_box.yview)
             Side_scroll.pack(side=RIGHT, fill=Y)
-            Print_box.config(state=DISABLED, relief=SUNKEN, width=80, height=20, bg='white',yscrollcommand=Side_scroll.set)
+            Bot_scroll.config(command=Print_box.xview, orient=HORIZONTAL)
+            Bot_scroll.pack(side=BOTTOM, fill=X)
+            Print_box.config(state=DISABLED, relief=SUNKEN, width=80, height=20, bg='white',yscrollcommand=Side_scroll.set, xscrollcommand=Bot_scroll.set)
+            Print_box.config(wrap=NONE)
             Print_box.pack(side=LEFT, expand=YES, fill=BOTH)
             self.Print_box = Print_box
+            
                         
 #-------
 #Report function
 #This function is to save time and code by enveloping the simon says with the text widget, into a print-like line
-#'where' is not a string, 'what' and 'mod' are
+#'where' is not a string, 'what' and mod are
         def report(self,where,what): #to be used to print to the user and the shell
                     self.Print_box.configure(state=NORMAL) #allows additions to text widget
                     self.Print_box.insert(where,what) #try printing to text widget
                     self.Print_box.insert(END,"\n")
                     print what #for debugging
                     self.Print_box.configure(state=DISABLED) #stops additions to text widget
-#------------                    
-        def makeButtonBar(self): #aka button bar in the psuedo
-            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
-            ButtonBar.pack(side=BOTTOM, fill=X)
-            
-            close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
-            close_button.pack(side = "right")
-            
-            import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
-            import_button.pack(side = "left")
-            
-            alright_button = Button(ButtonBar, text = "Alright", command=self.alright)
-            alright_button.pack(side = "left")
-
-            import_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
-            import_button.pack(side = "left")
-
-            import_button = Button(ButtonBar, text = "Save", command=self.save_csv)
-            import_button.pack(side = "left")
-
-            
+#------------
         def makeMenuBar(self):
             self.menubar = Menu(self.master)
             self.master.config(menu=self.menubar) #master top level window @leanwhat top level means specifically #THIS IS THE TOPLEVEL WINDOW THAT GETS CLOSED
@@ -88,6 +76,36 @@ class MainMenu(Frame): #calls the main window
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
             self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
+            
+        def makeButtonBar(self): #aka button bar in the psuedo
+            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
+            ButtonBar.pack(side=BOTTOM, fill=X)
+            
+            close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
+            close_button.pack(side = "right")
+            
+            import_button = Button(ButtonBar, text = "Import", command=self.import_csv(Carnac.imported_csv))
+            import_button.pack(side = "left")
+
+            column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
+            column_select_button.pack(side = "left")
+            
+            output_button = Button(ButtonBar, text = "Show Import", command=self.output)
+            output_button.pack(side = "left")
+
+            import_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
+            import_button.pack(side = "left")
+
+            import_button = Button(ButtonBar, text = "Save", command=self.save_csv)
+            import_button.pack(side = "left")
+
+            
+        
+
+            #select Column pop up
+        def column_pop(self):
+                column_window = Frame(self)
+                
                     
 #-------
 #define button actions
@@ -100,7 +118,7 @@ class MainMenu(Frame): #calls the main window
                 
            
 
-        def import_csv(self):
+        def import_csv(self,doc):
             self.report(END, "Importing...")
         
             filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Import CSV")
@@ -108,25 +126,26 @@ class MainMenu(Frame): #calls the main window
                    
 #write in the CSV
             with open(filename, 'r') as csvfile: 
-                global imported_csv #modifies global
+                #global imported_csv #modifies global
                 imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
-                imported_csv = []
+                doc = []
                 row_count = -1 #"Take back one kadam to honor the Hebrew God, whose Ark this is"(remove one for the header)
                 for row in imported_file:
                             print ', '.join(row)
-                            imported_csv.append(row)
+                            doc.append(row)
                             row_count = row_count + 1
                             #print row_count #for debugging
-                print imported_csv
+                print doc
                 self.report(END,"Successfully imported %s records" % row_count)
+                return doc
+
                 
-        
 #copy over the list, so the original is preserved
-        def alright(self):
+        def output(self):
             #self.Print_box.configure(state=NORMAL) #allows additions to text widget @removed turned into report function
-            #self.Print_box.insert(END,"Alright, test that string \n") #try printing to text widget
+            #self.Print_box.insert(END,"output, test that string \n") #try printing to text widget
             self.report(END,"You asked for it...")
-            #print "Alright, test that string!" #for debugging
+            #print "Test that string!" #for debugging
             #self.report(END, imported_csv) #dumps contents
             for row in imported_csv: #dumps contents in rows
                         #print row #for debug, called in report function
@@ -150,9 +169,9 @@ class MainMenu(Frame): #calls the main window
             #has checkbox for rule run yes/no
             
         def RESET(self):
-            global working_csv
+            #global working_csv
             if askyesno('Verify Reset', 'Are you sure you want to undo all rule work?'):
-                working_csv = []
+                self.working_csv = []
                 
                         
 #save button, takes working file turns into output file, 
@@ -169,5 +188,5 @@ class MainMenu(Frame): #calls the main window
                 #output_file.writerow(['please', 'work', 'damnit'])
                 output_file.writerows(imported_csv)
         
-if __name__ == '__main__': MainMenu().mainloop() #if I'm run as a script
+if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
     
