@@ -171,7 +171,7 @@ class Carnac(Frame): #calls the main window
                         #print row #for debug, called in report function
                         self.report(END,row)
             #self.Print_box.configure(state=DISABLED) #stops additions to text widget
-            select = self.ColumnSelectDropdown.get()  #@broken .wtf .get() is the call for OptionMenu, I dont know how else to get it, is it a syntax problem a concatenation problem? wtf?
+            select = self.Clm_select_variable.get()  #@broken .wtf .get() is the call for OptionMenu, I dont know how else to get it, is it a syntax problem a concatenation problem? wtf?
             self.report(END,"The selected Column is: %s" % select)
         def run_rules(self):
             self.report(END,"Running the rules!")
