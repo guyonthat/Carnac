@@ -13,6 +13,7 @@ Export to file
 #Import your shit
 #----------
 from Tkinter import *
+from ttk import * #upgrades to ttk to allow dynamic modification of clm_select, some sytax changes in "borderwidth" and "padding" from the old tk
 from tkMessageBox import*
 import tkFileDialog
 import csv
@@ -30,6 +31,9 @@ class Carnac(Frame): #calls the main window
             Frame.__init__(self,parent) #makes main menu top level <--- this is a lie? see @learnwhat
             self.imported_csv = []
             self.working_file = []
+            self.Clm_select_variable = []
+            self.Clm_menu_values = []
+            self.ColumnSelectDropdown = []
             self.pack(expand=YES, fill=BOTH)
             self.createWidgets()
             self.master.title("Carnac Role Guessing Tool")
@@ -38,7 +42,9 @@ class Carnac(Frame): #calls the main window
 
         def createWidgets(self): #loads widgets into Carnac
             self.makeMenuBar()
+            self.makeColumnSelectBar()
             self.makeButtonBar()
+            
             Side_scroll = Scrollbar(self)
             Bot_scroll = Scrollbar(self)
             Print_box = Text(self)
@@ -76,35 +82,45 @@ class Carnac(Frame): #calls the main window
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
             self.menubar.add_cascade(label='File', underline=0, menu=pulldown)
-            
+        
+
         def makeButtonBar(self): #aka button bar in the psuedo
-            ButtonBar = Frame(self, cursor='hand2', relief=SUNKEN, bd=2)
+            ButtonBar = Frame(self, cursor='hand2', padding="3 0 0 0", relief=SUNKEN, borderwidth=2)
             ButtonBar.pack(side=BOTTOM, fill=X)
             
-            close_button = Button(ButtonBar, text = "Close", command=self.program_quit)
-            close_button.pack(side = "right")
+           
             
             import_button = Button(ButtonBar, text = "Import", command=self.import_csv)
             import_button.pack(side = "left")
 
-            column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
-            column_select_button.pack(side = "left")
+           # column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
+            #column_select_button.pack(side = "left")
             
             output_button = Button(ButtonBar, text = "Show Import", command=self.output)
             output_button.pack(side = "left")
 
-            import_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
-            import_button.pack(side = "left")
+            rules_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
+            rules_button.pack(side = "left")
 
             import_button = Button(ButtonBar, text = "Save", command=self.save_csv)
             import_button.pack(side = "left")
 
+        def makeColumnSelectBar(self):#runs only if there isn't one already
+            ColumnSelectBar = Frame(self, cursor='hand2', relief=SUNKEN, borderwidth=2)
+            ColumnSelectBar.pack(side=BOTTOM, fill=X)
             
-        
-
-            #select Column pop up
-        def column_pop(self):
-                column_window = Frame(self)
+            #Clm_select_instruction = Label(ColumnSelectBar, text="Please select a column to run rules on:") #not needed now that selectdropdown is better filled
+            #Clm_select_instruction.pack(side=LEFT)
+            
+            self.Clm_select_variable = StringVar(self)
+            self.Clm_menu_values = ['File not loaded, please "Import"']
+            self.Clm_select_variable.set(self.Clm_menu_values[0]) #default value, needed for the dropdown to work
+            
+            self.ColumnSelectDropdown = OptionMenu(ColumnSelectBar, self.Clm_select_variable, *self.Clm_menu_values) 
+            self.ColumnSelectDropdown.pack(side=LEFT)
+            #print ColumnSelectDropdown.get()
+            close_button = Button(ColumnSelectBar, text = "Close", command=self.program_quit) #moved to from button bar for better looks
+            close_button.pack(side = "right")
                 
                     
 #-------
@@ -124,8 +140,8 @@ class Carnac(Frame): #calls the main window
             filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Import CSV")
             self.report(END,filename)
                    
-#write in the CSV
-            with open(filename, 'r') as csvfile: 
+        
+            with open(filename, 'r') as csvfile: #write in the CSV
                 #global imported_csv #modifies global
                 imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
                 self.imported_csv = []
@@ -138,7 +154,11 @@ class Carnac(Frame): #calls the main window
                 print self.imported_csv
                 self.report(END,"Successfully imported %s records" % row_count)
                 
-
+            self.Clm_select_variable.set('FILE IMPORTED') #default value, needed for the dropdown to work
+            clm_list = ["1sdk;lfjh","2asdfasdf","3asdfasdf","4asdf","5asdf"]
+            self.ColumnSelectDropdown.set_menu('This will be eventually filled with the file Columns', *clm_list)
+            
+            
                 
 #copy over the list, so the original is preserved
         def output(self):
@@ -151,7 +171,8 @@ class Carnac(Frame): #calls the main window
                         #print row #for debug, called in report function
                         self.report(END,row)
             #self.Print_box.configure(state=DISABLED) #stops additions to text widget
-
+            select = self.ColumnSelectDropdown.get()  #@broken .wtf .get() is the call for OptionMenu, I dont know how else to get it, is it a syntax problem a concatenation problem? wtf?
+            self.report(END,"The selected Column is: %s" % select)
         def run_rules(self):
             self.report(END,"Running the rules!")
             #if transition file has contents then skip getting column
@@ -186,7 +207,7 @@ class Carnac(Frame): #calls the main window
             with open(exportname, 'wb') as csvfile:
                 output_file = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 #output_file.writerow(['please', 'work', 'damnit'])
-                output_file.writerows(imported_csv)
+                output_file.writerows(self.imported_csv)
         
 if __name__ == '__main__': Carnac().mainloop() #if I'm run as a script
     
