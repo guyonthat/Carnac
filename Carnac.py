@@ -18,11 +18,7 @@ from tkMessageBox import*
 import tkFileDialog
 import csv
 
-#----------
-#global Variables, to be modified later
-#----------
-#imported_csv = []
-#working_file = []
+
 #----------
 #call Make the Gui and buttons
 #----------
@@ -155,8 +151,15 @@ class Carnac(Frame): #calls the main window
                 self.report(END,"Successfully imported %s records" % row_count)
                 
             self.Clm_select_variable.set('FILE IMPORTED') #default value, needed for the dropdown to work
-            clm_list = ["1sdk;lfjh","2asdfasdf","3asdfasdf","4asdf","5asdf"]
-            self.ColumnSelectDropdown.set_menu('This will be eventually filled with the file Columns', *clm_list)
+            clm_list = [] #creates the holder for the column list
+            print clm_list # for debugging
+            tmp_list =  self.imported_csv[0] #takes the headers from the imported file @simonsays
+            tmp_list =  csv.reader(tmp_list) #turns them into their own list entries
+            for row in tmp_list:                #turns that back into a string
+                clm_list.append(row)
+            clm_list =  clm_list[0]     #removes the extra set of []
+            print clm_list #for debugging
+            self.ColumnSelectDropdown.set_menu('Please select which column the rules will be applied to', *clm_list) #gives it information to populate the optionmenu with
             
             
                 
