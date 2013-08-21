@@ -74,6 +74,7 @@ class Carnac(Frame): #calls the main window
             pulldown = Menu(self.menubar) # The (self.menubar) sets it in the menubar
             pulldown.add_command(label="Import File", command=self.import_csv)
             pulldown.add_command(label="Reset", command=self.RESET)
+            pulldown.add_command(label="Edit Rules", command=self.modify_rules)
             pulldown.add_command(label="Save As", command=self.save_csv)
             pulldown.add_separator()
             pulldown.add_command(label="Close", command=self.program_quit)
@@ -92,7 +93,7 @@ class Carnac(Frame): #calls the main window
            # column_select_button = Button(ButtonBar, text = "Select Column", command=self.column_pop)
             #column_select_button.pack(side = "left")
             
-            output_button = Button(ButtonBar, text = "Show Import", command=self.output)
+            output_button = Button(ButtonBar, text = "List Contents", command=self.output)
             output_button.pack(side = "left")
 
             rules_button = Button(ButtonBar, text = "Run Rules", command=self.run_rules)
@@ -132,14 +133,15 @@ class Carnac(Frame): #calls the main window
 
         def import_csv(self):
             self.report(END, "Importing...")
+            self.working_file = [] #resets the working file on import to allow for re-do in program
         
             filename = tkFileDialog.askopenfilename(filetypes=[('CSV (Comma Deliminated)', '.csv')], defaultextension=".csv", title="Import CSV")
             self.report(END,filename)
                    
         
-            with open(filename, 'r') as csvfile: #write in the CSV
+            with open(filename, 'rb') as csvfile: #write in the CSV
                 #global imported_csv #modifies global
-                imported_file = csv.reader(csvfile, delimiter=' ', quotechar='|')
+                imported_file = csv.reader(csvfile, delimiter=',', quotechar='"')
                 self.imported_csv = []
                 row_count = -1 #"Take back one kadam to honor the Hebrew God, whose Ark this is"(remove one for the header)
                 for row in imported_file:
@@ -151,51 +153,54 @@ class Carnac(Frame): #calls the main window
                 self.report(END,"Successfully imported %s records" % row_count)
                 
             self.Clm_select_variable.set('FILE IMPORTED') #default value, needed for the dropdown to work
-            clm_list = [] #creates the holder for the column list
-            print clm_list # for debugging
-            tmp_list =  self.imported_csv[0] #takes the headers from the imported file @simonsays
-            tmp_list =  csv.reader(tmp_list) #turns them into their own list entries
-            for row in tmp_list:                #turns that back into a string
-                clm_list.append(row)
-            clm_list =  clm_list[0]     #removes the extra set of []
-            print clm_list #for debugging
-            self.ColumnSelectDropdown.set_menu('Please select which column the rules will be applied to', *clm_list) #gives it information to populate the optionmenu with
+            self.ColumnSelectDropdown.set_menu('Please select which column the rules will be applied to', *self.imported_csv[0]) #gives it information to populate the optionmenu with
             
             
                 
 #copy over the list, so the original is preserved
         def output(self):
-            #self.Print_box.configure(state=NORMAL) #allows additions to text widget @removed turned into report function
-            #self.Print_box.insert(END,"output, test that string \n") #try printing to text widget
             self.report(END,"You asked for it...")
             #print "Test that string!" #for debugging
-            #self.report(END, imported_csv) #dumps contents
-            for row in self.imported_csv: #dumps contents in rows
+            if self.working_file == []: #Show the working file if it has something, otherwise show what was imported
+                for row in self.imported_csv: #dumps contents in rows
                         #print row #for debug, called in report function
                         self.report(END,row)
-            #self.Print_box.configure(state=DISABLED) #stops additions to text widget
-            select = self.Clm_select_variable.get()  #@broken .wtf .get() is the call for OptionMenu, I dont know how else to get it, is it a syntax problem a concatenation problem? wtf?
-            self.report(END,"The selected Column is: %s" % select)
-        def run_rules(self):
-            self.report(END,"Running the rules!")
-            #if transition file has contents then skip getting column
-            active_col = 0            
-            #get which column will be run
-                #pop up window with drop-box populated with the first row of imported_csv, and an accept and run rules button  and cancel button okay returns the active_col number
-                #cancel escapes this code
+            else:
+                for row in self.working_file:
+                        self.report(END,row)
+            
+            #select = self.Clm_select_variable.get()  #must use .get() on variable not menu
+            #self.report(END,"The selected Column is: %s" % select)
+            
+        def run_rules(self):     
+            if self.Clm_select_variable.get() == "Please select which column the rules will be applied to": #if they didnt select a column, throw an error
+                    showerror("Selection Not Made", "Please select a column to run rules on")#error popup using messagebox
+            else:
+                self.report(END,"Running the rules!")
+            
+                if self.working_file == []: #if transition empty, then fill with selected column
+                        active_col = 0 #sets variable
+                        self.report(END,self.imported_csv[0]) #prints first row for debug
+                        active_col = self.imported_csv[0].index(self.Clm_select_variable.get())#gets the column number of the selection
+                        self.report(END,active_col) #prints for debugging
+                        self.report(END,self.Clm_select_variable.get())#reports the name which will be run
+                        for row in self.imported_csv:
+                                self.working_file.append(row[active_col])#takes the entry from each row in main list and makes sub list @todo currently broken                        
+                
             #read that column into a transition file
             #clean transition file
             #run rules that are rule run yes on transition file
             #return box name and amount if amount greater than 0
 
-        #@todo def modify_rules(self):
+        def modify_rules(self):
+            self.report(END,"This will pop up a new window")
             #pop up new gui to have user add mod and del rules
             #has checkbox for rule run yes/no
             
         def RESET(self):
             #global working_csv
             if askyesno('Verify Reset', 'Are you sure you want to undo all rule work?'):
-                self.working_csv = []
+                self.working_file = []
                 
                         
 #save button, takes working file turns into output file, 
